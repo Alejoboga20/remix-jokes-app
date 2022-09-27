@@ -34,17 +34,16 @@ export const action: ActionFunction = async ({ request }) => {
 	const form = await request.formData();
 	const name = form.get('name');
 	const content = form.get('content');
+
 	if (typeof name !== 'string' || typeof content !== 'string') {
 		return badRequest({
 			formError: `Form not submitted correctly.`,
 		});
 	}
 
-	const fieldErrors = {
-		name: validateJokeName(name),
-		content: validateJokeContent(content),
-	};
+	const fieldErrors = { name: validateJokeName(name), content: validateJokeContent(content) };
 	const fields = { name, content };
+
 	if (Object.values(fieldErrors).some(Boolean)) {
 		return badRequest({ fieldErrors, fields });
 	}
