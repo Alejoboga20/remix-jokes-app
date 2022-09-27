@@ -70,6 +70,30 @@ export const createUserSession = async (userId: string, redirectTo: string) => {
 	});
 };
 
+export const getUser = async (request: Request) => {
+	const userId = await getUserId(request);
+
+	if (typeof userId !== 'string') return null;
+
+	try {
+		const user = await db.user.findUnique({ where: { id: userId } });
+		return user;
+	} catch (error) {
+		console.log({ error });
+		throw logout(request);
+	}
+};
+
+export const logout = async (request: Request) => {
+	const session = await getUserSession(request);
+
+	return redirect('/login', {
+		headers: {
+			'Set-Cookie': await storage.destroySession(session),
+		},
+	});
+};
+
 type LoginForm = {
 	username: string;
 	password: string;
